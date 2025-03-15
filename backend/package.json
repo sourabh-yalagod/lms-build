@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && npx tsc -b",
+    "build": "rimraf dist && npx tsc -b && cpx \"src/seed/data/**/*\" dist/seed/data",
     "start": "npm run build && node dist/index.js",
     "dev": "concurrently \"tsc -b --watch\" \"nodemon dist/index.js\"",
-    "seed": "ts-node src/seed/seedDynamodb.ts"
+    "seed": "node dist/seed/seedDynamodb.js"
   },
   "keywords": [],
   "author": "",

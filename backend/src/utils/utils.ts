@@ -1,4 +1,4 @@
-import path from "path";
+import path from 'path';
 
 export const updateCourseVideoInfo = (
   course: any,
@@ -17,11 +17,11 @@ export const updateCourseVideoInfo = (
   }
 
   chapter.video = videoUrl;
-  chapter.type = "Video";
+  chapter.type = 'Video';
 };
 
 export const validateUploadedFiles = (files: any) => {
-  const allowedExtensions = [".mp4", ".m3u8", ".mpd", ".ts", ".m4s"];
+  const allowedExtensions = ['.mp4', '.m3u8', '.mpd', '.ts', '.m4s'];
   for (const file of files) {
     const ext = path.extname(file.originalname).toLowerCase();
     if (!allowedExtensions.includes(ext)) {
@@ -33,18 +33,18 @@ export const validateUploadedFiles = (files: any) => {
 export const getContentType = (filename: string) => {
   const ext = path.extname(filename).toLowerCase();
   switch (ext) {
-    case ".mp4":
-      return "video/mp4";
-    case ".m3u8":
-      return "application/vnd.apple.mpegurl";
-    case ".mpd":
-      return "application/dash+xml";
-    case ".ts":
-      return "video/MP2T";
-    case ".m4s":
-      return "video/iso.segment";
+    case '.mp4':
+      return 'video/mp4';
+    case '.m3u8':
+      return 'application/vnd.apple.mpegurl';
+    case '.mpd':
+      return 'application/dash+xml';
+    case '.ts':
+      return 'video/MP2T';
+    case '.m4s':
+      return 'video/iso.segment';
     default:
-      return "application/octet-stream";
+      return 'application/octet-stream';
   }
 };
 
@@ -57,7 +57,7 @@ export const handleAdvancedVideoUpload = async (
 ) => {
   const isHLSOrDASH = files.some(
     (file: any) =>
-      file.originalname.endsWith(".m3u8") || file.originalname.endsWith(".mpd")
+      file.originalname.endsWith('.m3u8') || file.originalname.endsWith('.mpd')
   );
 
   if (isHLSOrDASH) {
@@ -78,11 +78,11 @@ export const handleAdvancedVideoUpload = async (
     // Determine manifest file URL
     const manifestFile = files.find(
       (file: any) =>
-        file.originalname.endsWith(".m3u8") ||
-        file.originalname.endsWith(".mpd")
+        file.originalname.endsWith('.m3u8') ||
+        file.originalname.endsWith('.mpd')
     );
-    const manifestFileName = manifestFile?.originalname || "";
-    const videoType = manifestFileName.endsWith(".m3u8") ? "hls" : "dash";
+    const manifestFileName = manifestFile?.originalname || '';
+    const videoType = manifestFileName.endsWith('.m3u8') ? 'hls' : 'dash';
 
     return {
       videoUrl: `${process.env.CLOUDFRONT_DOMAIN}/videos/${uniqueId}/${manifestFileName}`,
@@ -105,10 +105,8 @@ export const mergeSections = (
   for (const newSection of newSections) {
     const section = existingSectionsMap.get(newSection.sectionId);
     if (!section) {
-      // Add new section
       existingSectionsMap.set(newSection.sectionId, newSection);
     } else {
-      // Merge chapters within the existing section
       section.chapters = mergeChapters(section.chapters, newSection.chapters);
       existingSectionsMap.set(newSection.sectionId, section);
     }
