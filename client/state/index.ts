@@ -25,8 +25,6 @@ export const globalSlice = createSlice({
   initialState,
   reducers: {
     setSections: (state, action: PayloadAction<Section[]>) => {
-      console.log(' action.payload', action.payload);
-
       state.courseEditor.sections = action.payload;
     },
     openChapterModal: (
@@ -36,6 +34,7 @@ export const globalSlice = createSlice({
         chapterIndex: number | null;
       }>
     ) => {
+      console.log(' action.payload from OpenChapter Model : ', action.payload);
       state.courseEditor.isChapterModalOpen = true;
       state.courseEditor.selectedSectionIndex = action.payload.sectionIndex;
       state.courseEditor.selectedChapterIndex = action.payload.chapterIndex;

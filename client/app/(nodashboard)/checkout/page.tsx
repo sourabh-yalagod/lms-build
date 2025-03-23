@@ -19,9 +19,9 @@ const page = () => {
       case 2:
         return <Payment />;
       case 3:
-        return <PurchaseCompletion/>;
+        return <PurchaseCompletion />;
       default:
-        return '<CheckoutDetailsPage />';
+      // return <CheckoutDetailsPage />;
     }
   };
 

@@ -35,11 +35,13 @@ const createPaymentIntent = async (
         },
       },
     });
+    console.log(paymentIntent);
 
     res.json({
       message: '',
       data: paymentIntent.client_secret,
     });
+    return;
   } catch (error) {
     res.status(501).json({ message: 'Stripe paymentIntent Error' });
   }
@@ -52,59 +54,59 @@ const createTransaction = async (
   const { userId, courseId, transactionId, paymentProvider, amount } = req.body;
   console.log({ userId, courseId, transactionId, paymentProvider, amount });
 
-  try {
-    // 1. Check if the course is available
-    const course = await Course.get(courseId);
-    if (!course) {
-      res.status(404).json({ message: 'Course is not available!' });
-      return;
-    }
-
-    // 2. Create a transaction record
-    const transaction = new Transaction({
-      courseId,
-      userId,
-      transactionId,
-      paymentProvider,
-      amount,
-      dateTime: new Date().toISOString(),
-    });
-
-    await transaction.save(); // ✅ Use instance save()
-
-    // 3. Set up the initial course progress
-    const courseProgress = new UserCourseProgress({
-      userId,
-      courseId,
-      enrollmentDate: new Date().toISOString(),
-      lastAccessedTimestamp: new Date().toISOString(),
-      overallProgress: 0,
-      sections: course?.sections?.map((section: any) => ({
-        sectionId: section?.sectionId,
-        chapters:
-          section?.chapters?.map((chapter: any) => ({
-            chapterId: chapter?.chapterId,
-            completed: false,
-          })) || [],
-      })),
-    });
-
-    await courseProgress.save();
-
-    // 4. Update course enrollments
-    await Course.update({ courseId }, { $ADD: { enrollments: [{ userId }] } });
-
-    res.json({
-      message: 'Course purchased successfully!',
-      data: {
-        transaction,
-        courseProgress,
-      },
-    });
-  } catch (error) {
-    console.error('Transaction Error:', error);
-    res.status(500).json({ message: 'Transaction Error!' });
+  // 1. Check if the course is available
+  const course = await Course.get(courseId);
+  if (!course) {
+    res.status(404).json({ message: 'Course is not available!' });
+    return;
   }
+
+  // 2. Create a transaction record
+  const transaction = new Transaction({
+    courseId,
+    userId,
+    transactionId,
+    paymentProvider,
+    amount,
+    dateTime: new Date().toISOString(),
+  });
+
+  await transaction.save(); // ✅ Use instance save()
+
+  // 3. Set up the initial course progress
+  const courseProgress = new UserCourseProgress({
+    userId,
+    courseId,
+    enrollmentDate: new Date().toISOString(),
+    lastAccessedTimestamp: new Date().toISOString(),
+    overallProgress: 0,
+    sections: course?.sections?.map((section: any) => ({
+      sectionId: section?.sectionId,
+      chapters:
+        section?.chapters?.map((chapter: any) => ({
+          chapterId: chapter?.chapterId,
+          completed: false,
+        })) || [],
+    })),
+  });
+
+  await courseProgress.save();
+  const enrollments = course?.enrollments || [];
+  console.log('🚀 ~ enrollments:', enrollments);
+  const response = await Course.update(
+    { courseId },
+    { enrollments: [...enrollments, { userId }] }
+  );
+  await course.save();
+  console.log('🚀 ~ response:', response);
+  console.log(course);
+  res.json({
+    message: 'Course purchased successfully!',
+    data: {
+      transaction,
+      courseProgress,
+    },
+  });
 };
 
 const getUserTransaction = async (

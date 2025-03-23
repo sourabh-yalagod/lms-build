@@ -15,6 +15,10 @@ import {
 
 const app = express();
 
+app.get('/', (req, res) => {
+  res.send('Hello world');
+});
+
 config({ path: './.env' });
 const port = process.env.PORT || 3000;
 

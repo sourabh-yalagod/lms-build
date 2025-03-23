@@ -14,7 +14,10 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useCreateTransactionMutation } from '@/state/api';
 import { useClerk, useUser } from '@clerk/nextjs';
-console.log(process.env.NEXT_PUBLIC_STRIPE_REDIRECT_URL);
+console.log(
+  '🚀 ~ NEXT_PUBLIC_STRIPE_REDIRECT_URL:',
+  process.env.NEXT_PUBLIC_STRIPE_REDIRECT_URL
+);
 
 const PaymentPage = () => {
   const { user } = useUser();
@@ -39,11 +42,12 @@ const PaymentPage = () => {
       });
       return;
     }
-    const baseUrl = process.env.NEXT_PUBLIC_LOCAL_URL
-      ? `https://${process.env.NEXT_PUBLIC_LOCAL_URL}`
-      : process.env.NEXT_PUBLIC_VARCEL_URL
-        ? `https://${process.env.NEXT_PUBLIC_VARCEL_URL}`
-        : undefined;
+    // const baseUrl = process.env.NEXT_PUBLIC_LOCAL_URL
+    //   ? process.env.NEXT_PUBLIC_LOCAL_URL
+    //   : `https://${process.env.NEXT_PUBLIC_VARCEL_URL}`
+    //     ? `https://${process.env.NEXT_PUBLIC_VARCEL_URL}`
+    //     : undefined;
+    const baseUrl = 'http://localhost:3000';
     const confirmPayment = await stripe.confirmPayment({
       elements,
       confirmParams: {
@@ -51,6 +55,7 @@ const PaymentPage = () => {
       },
       redirect: 'if_required',
     });
+    console.log('🚀 ~ handleSubmit ~ confirmPayment : ', confirmPayment);
     if (confirmPayment.paymentIntent?.status === 'succeeded') {
       const newTransaction: Partial<Transaction> = {
         amount: confirmPayment.paymentIntent.amount,
@@ -60,8 +65,9 @@ const PaymentPage = () => {
         paymentProvider: 'stripe',
       };
       const { data, error } = await createTransaction(newTransaction);
+      console.log('🚀 ~ handleSubmit ~ { data, error } :', { data, error });
       if (data) {
-        window.location.href = `${process.env.NEXT_PUBLIC_STRIPE_REDIRECT_URL}&id=${courseId}`;
+        navigateToStep(3);
       }
     }
   };

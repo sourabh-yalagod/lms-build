@@ -1,5 +1,4 @@
 'use client';
-
 import Toolbar from '@/components/Toolbar';
 import CourseCard from '@/components/CourseCard';
 import { useRouter } from 'next/navigation';
@@ -37,6 +36,8 @@ const Courses = () => {
   }, [courses, searchTerm, selectedCategory]);
 
   const handleGoToCourse = (course: Course) => {
+    const firstChapter = course.sections[0].chapters[0].chapterId;
+    console.log('firstChapter : ', firstChapter);
     console.log('course : ', course);
     if (
       course.sections &&
@@ -44,16 +45,13 @@ const Courses = () => {
       course.sections[0].chapters.length > 0
     ) {
       const firstChapter = course.sections[0].chapters[0];
+
       router.push(
         `/user/courses/${course.courseId}/chapters/${firstChapter.chapterId}`,
         {
           scroll: false,
         }
       );
-    } else {
-      router.push(`/user/courses/${course.courseId}`, {
-        scroll: false,
-      });
     }
   };
 
@@ -70,7 +68,7 @@ const Courses = () => {
         onCategoryChange={setSelectedCategory}
       />
       <div className="user-courses__grid">
-        {filteredCourses.map((course: Course) => (
+        {filteredCourses?.map((course: Course) => (
           <CourseCard
             key={course.courseId}
             course={course}

@@ -26,21 +26,20 @@ dotenv_1.default.config();
 let client;
 /* DynamoDB Configuration */
 const isProduction = process.env.NODE_ENV === 'production';
-console.log(isProduction);
 if (!isProduction) {
     dynamoose_1.default.aws.ddb.local();
     client = new client_dynamodb_1.DynamoDBClient({
         endpoint: 'http://localhost:8000',
-        region: 'ap-south-1',
+        region: 'us-east-2',
         credentials: {
-            accessKeyId: 'dummy',
-            secretAccessKey: 'dummy',
+            accessKeyId: 'dummyKey123',
+            secretAccessKey: 'dummyKey123',
         },
     });
 }
 else {
     client = new client_dynamodb_1.DynamoDBClient({
-        region: process.env.AWS_REGION || 'ap-south-1',
+        region: process.env.AWS_REGION || 'us-east-2',
     });
 }
 /* DynamoDB Suppress Tag Warnings */
@@ -79,8 +78,7 @@ function seedData(tableName, filePath) {
         console.log(`Seeding data to table: ${formattedTableName}`);
         for (const item of data) {
             try {
-                // Use `put` instead of `create` to overwrite existing items
-                yield dynamoose_1.default.model(formattedTableName).put(item);
+                yield dynamoose_1.default.model(formattedTableName).create(item);
             }
             catch (err) {
                 console.error(`Unable to add item to ${formattedTableName}. Error:`, JSON.stringify(err, null, 2));
@@ -124,7 +122,9 @@ function seed() {
         yield new Promise((resolve) => setTimeout(resolve, 1000));
         yield createTables();
         const seedDataPath = path_1.default.join(__dirname, './data');
-        const files = fs_1.default.readdirSync(seedDataPath).filter((file) => file.endsWith('.json'));
+        const files = fs_1.default
+            .readdirSync(seedDataPath)
+            .filter((file) => file.endsWith('.json'));
         for (const file of files) {
             const tableName = path_1.default.basename(file, '.json');
             const filePath = path_1.default.join(seedDataPath, file);

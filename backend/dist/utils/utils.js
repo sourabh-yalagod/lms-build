@@ -25,11 +25,11 @@ const updateCourseVideoInfo = (course, sectionId, chapterId, videoUrl) => {
         throw new Error(`Chapter not found: ${chapterId}`);
     }
     chapter.video = videoUrl;
-    chapter.type = "Video";
+    chapter.type = 'Video';
 };
 exports.updateCourseVideoInfo = updateCourseVideoInfo;
 const validateUploadedFiles = (files) => {
-    const allowedExtensions = [".mp4", ".m3u8", ".mpd", ".ts", ".m4s"];
+    const allowedExtensions = ['.mp4', '.m3u8', '.mpd', '.ts', '.m4s'];
     for (const file of files) {
         const ext = path_1.default.extname(file.originalname).toLowerCase();
         if (!allowedExtensions.includes(ext)) {
@@ -41,24 +41,24 @@ exports.validateUploadedFiles = validateUploadedFiles;
 const getContentType = (filename) => {
     const ext = path_1.default.extname(filename).toLowerCase();
     switch (ext) {
-        case ".mp4":
-            return "video/mp4";
-        case ".m3u8":
-            return "application/vnd.apple.mpegurl";
-        case ".mpd":
-            return "application/dash+xml";
-        case ".ts":
-            return "video/MP2T";
-        case ".m4s":
-            return "video/iso.segment";
+        case '.mp4':
+            return 'video/mp4';
+        case '.m3u8':
+            return 'application/vnd.apple.mpegurl';
+        case '.mpd':
+            return 'application/dash+xml';
+        case '.ts':
+            return 'video/MP2T';
+        case '.m4s':
+            return 'video/iso.segment';
         default:
-            return "application/octet-stream";
+            return 'application/octet-stream';
     }
 };
 exports.getContentType = getContentType;
 // Preserved HLS/DASH upload logic for future use
 const handleAdvancedVideoUpload = (s3, files, uniqueId, bucketName) => __awaiter(void 0, void 0, void 0, function* () {
-    const isHLSOrDASH = files.some((file) => file.originalname.endsWith(".m3u8") || file.originalname.endsWith(".mpd"));
+    const isHLSOrDASH = files.some((file) => file.originalname.endsWith('.m3u8') || file.originalname.endsWith('.mpd'));
     if (isHLSOrDASH) {
         // Handle HLS/MPEG-DASH Upload
         const uploadPromises = files.map((file) => {
@@ -74,10 +74,10 @@ const handleAdvancedVideoUpload = (s3, files, uniqueId, bucketName) => __awaiter
         });
         yield Promise.all(uploadPromises);
         // Determine manifest file URL
-        const manifestFile = files.find((file) => file.originalname.endsWith(".m3u8") ||
-            file.originalname.endsWith(".mpd"));
-        const manifestFileName = (manifestFile === null || manifestFile === void 0 ? void 0 : manifestFile.originalname) || "";
-        const videoType = manifestFileName.endsWith(".m3u8") ? "hls" : "dash";
+        const manifestFile = files.find((file) => file.originalname.endsWith('.m3u8') ||
+            file.originalname.endsWith('.mpd'));
+        const manifestFileName = (manifestFile === null || manifestFile === void 0 ? void 0 : manifestFile.originalname) || '';
+        const videoType = manifestFileName.endsWith('.m3u8') ? 'hls' : 'dash';
         return {
             videoUrl: `${process.env.CLOUDFRONT_DOMAIN}/videos/${uniqueId}/${manifestFileName}`,
             videoType,
@@ -94,11 +94,9 @@ const mergeSections = (existingSections, newSections) => {
     for (const newSection of newSections) {
         const section = existingSectionsMap.get(newSection.sectionId);
         if (!section) {
-            // Add new section
             existingSectionsMap.set(newSection.sectionId, newSection);
         }
         else {
-            // Merge chapters within the existing section
             section.chapters = (0, exports.mergeChapters)(section.chapters, newSection.chapters);
             existingSectionsMap.set(newSection.sectionId, section);
         }

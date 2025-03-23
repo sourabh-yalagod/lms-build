@@ -1,4 +1,8 @@
-import { DynamoDBClient, DeleteTableCommand, ListTablesCommand } from '@aws-sdk/client-dynamodb';
+import {
+  DynamoDBClient,
+  DeleteTableCommand,
+  ListTablesCommand,
+} from '@aws-sdk/client-dynamodb';
 import fs from 'fs';
 import path from 'path';
 import dynamoose from 'dynamoose';
@@ -7,33 +11,35 @@ import Transaction from '../models/transactionModel';
 import Course from '../models/courseModel';
 import UserCourseProgress from '../models/userCourseProgressModel';
 import dotenv from 'dotenv';
+
 dotenv.config();
 let client: DynamoDBClient;
 
 /* DynamoDB Configuration */
 const isProduction = process.env.NODE_ENV === 'production';
-console.log(isProduction);
 
 if (!isProduction) {
   dynamoose.aws.ddb.local();
   client = new DynamoDBClient({
     endpoint: 'http://localhost:8000',
-    region: 'ap-south-1',
+    region: 'us-east-2',
     credentials: {
-      accessKeyId: 'dummy',
-      secretAccessKey: 'dummy',
+      accessKeyId: 'dummyKey123',
+      secretAccessKey: 'dummyKey123',
     },
   });
 } else {
   client = new DynamoDBClient({
-    region: process.env.AWS_REGION || 'ap-south-1',
+    region: process.env.AWS_REGION || 'us-east-2',
   });
 }
 
 /* DynamoDB Suppress Tag Warnings */
 const originalWarn = console.warn.bind(console);
 console.warn = (message, ...args) => {
-  if (!message.includes('Tagging is not currently supported in DynamoDB Local')) {
+  if (
+    !message.includes('Tagging is not currently supported in DynamoDB Local')
+  ) {
     originalWarn(message, ...args);
   }
 };
@@ -55,33 +61,41 @@ async function createTables() {
       await table.initialize();
       console.log(`Table created and initialized: ${tableName}`);
     } catch (error: any) {
-      console.error(`Error creating table ${tableName}:`, error.message, error.stack);
+      console.error(
+        `Error creating table ${tableName}:`,
+        error.message,
+        error.stack
+      );
     }
   }
 }
 
 async function seedData(tableName: string, filePath: string) {
-  const data: { [key: string]: any }[] = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const data: { [key: string]: any }[] = JSON.parse(
+    fs.readFileSync(filePath, 'utf8')
+  );
 
   const formattedTableName = pluralize.singular(
-    tableName.charAt(0).toUpperCase() + tableName.slice(1),
+    tableName.charAt(0).toUpperCase() + tableName.slice(1)
   );
 
   console.log(`Seeding data to table: ${formattedTableName}`);
 
   for (const item of data) {
     try {
-      // Use `put` instead of `create` to overwrite existing items
-      await dynamoose.model(formattedTableName).put(item);
+      await dynamoose.model(formattedTableName).create(item);
     } catch (err) {
       console.error(
         `Unable to add item to ${formattedTableName}. Error:`,
-        JSON.stringify(err, null, 2),
+        JSON.stringify(err, null, 2)
       );
     }
   }
 
-  console.log('\x1b[32m%s\x1b[0m', `Successfully seeded data to table: ${formattedTableName}`);
+  console.log(
+    '\x1b[32m%s\x1b[0m',
+    `Successfully seeded data to table: ${formattedTableName}`
+  );
 }
 
 async function deleteTable(baseTableName: string) {
@@ -116,7 +130,9 @@ export default async function seed() {
   await createTables();
 
   const seedDataPath = path.join(__dirname, './data');
-  const files = fs.readdirSync(seedDataPath).filter((file) => file.endsWith('.json'));
+  const files = fs
+    .readdirSync(seedDataPath)
+    .filter((file) => file.endsWith('.json'));
 
   for (const file of files) {
     const tableName = path.basename(file, '.json');

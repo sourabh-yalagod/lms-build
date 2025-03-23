@@ -125,12 +125,9 @@ const createCourse = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.createCourse = createCourse;
 const updateCourse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     const courseData = req.body;
     const { courseId } = req.params;
     const { userId } = (0, express_1.getAuth)(req);
-    console.log('userId', userId);
-    console.log('courseData : ', courseData);
     if (!userId) {
         res.status(401).json({
             message: 'Please authnticated to updated course...!',
@@ -155,13 +152,14 @@ const updateCourse = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const sectionData = typeof courseData.sections === 'string'
             ? JSON.parse(courseData.sections)
             : courseData.sections;
-        courseData.sections = (_a = sectionData === null || sectionData === void 0 ? void 0 : sectionData.sections) === null || _a === void 0 ? void 0 : _a.map((section) => {
+        courseData.sections = sectionData === null || sectionData === void 0 ? void 0 : sectionData.map((section) => {
             var _a;
             return (Object.assign(Object.assign({}, section), { sectionId: (section === null || section === void 0 ? void 0 : section.sectionId) || (0, crypto_1.randomUUID)(), chapters: (_a = section === null || section === void 0 ? void 0 : section.chapters) === null || _a === void 0 ? void 0 : _a.map((chapter) => (Object.assign(Object.assign({}, chapter), { chapterId: (chapter === null || chapter === void 0 ? void 0 : chapter.chapterId) || (0, crypto_1.randomUUID)() }))) }));
         });
         Object.assign(course, courseData);
     }
     yield course.save();
+    console.log(course);
     res.status(201).json({
         message: 'course updated successfully.',
         success: true,

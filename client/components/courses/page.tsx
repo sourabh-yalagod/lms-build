@@ -1,37 +1,37 @@
-"use client";
+'use client';
 
-import Toolbar from "@/components/Toolbar";
-import CourseCard from "@/components/CourseCard";
-import { useGetUserEnrolledCoursesQuery } from "@/state/api";
-import { useRouter } from "next/navigation";
-import Header from "@/components/Header";
-import { useUser } from "@clerk/nextjs";
-import { useState, useMemo } from "react";
-import Loading from "@/components/Loading";
+import Toolbar from '@/components/Toolbar';
+import CourseCard from '@/components/CourseCard';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
+import { useState, useMemo } from 'react';
+import Loading from '@/components/Loading';
+import { useGetUserEnrollmentCourseQuery } from '@/state/api';
+import Header from '@/components/Headers';
 
 const Courses = () => {
   const router = useRouter();
   const { user, isLoaded } = useUser();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   const {
     data: courses,
     isLoading,
     isError,
-  } = useGetUserEnrolledCoursesQuery(user?.id ?? "", {
+  } = useGetUserEnrollmentCourseQuery(user?.id ?? '', {
     skip: !isLoaded || !user,
   });
 
   const filteredCourses = useMemo(() => {
     if (!courses) return [];
 
-    return courses.filter((course) => {
+    return courses.filter((course: Course) => {
       const matchesSearch = course.title
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
       const matchesCategory =
-        selectedCategory === "all" || course.category === selectedCategory;
+        selectedCategory === 'all' || course.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
   }, [courses, searchTerm, selectedCategory]);
@@ -69,7 +69,7 @@ const Courses = () => {
         onCategoryChange={setSelectedCategory}
       />
       <div className="user-courses__grid">
-        {filteredCourses.map((course) => (
+        {filteredCourses.map((course: Course) => (
           <CourseCard
             key={course.courseId}
             course={course}

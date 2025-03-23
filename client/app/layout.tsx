@@ -26,14 +26,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <ClerkProvider>
-        <Provider>
-          <Suspense fallback={<Loading />}>
-            <body className={`${dm_sans.className} antialiased`}>
+        <body className={`${dm_sans.className} antialiased`}>
+          <Provider>
+            <Suspense fallback={<Loading />}>
               <div className="root-layout">{children}</div>
               <Toaster />
-            </body>
-          </Suspense>
-        </Provider>
+            </Suspense>
+          </Provider>
+        </body>
       </ClerkProvider>
     </html>
   );

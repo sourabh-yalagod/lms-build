@@ -1,8 +1,8 @@
-'use client';
 import { CustomFormField } from '@/components/CustomFormField';
 import CustomModal from '@/components/CustomModel';
 import { Button } from '@/components/ui/button';
 import {
+  Form,
   FormControl,
   FormField,
   FormItem,
@@ -14,31 +14,27 @@ import { ChapterFormData, chapterSchema } from '@/lib/schemas';
 import { addChapter, closeChapterModal, editChapter } from '@/state';
 import { useAppDispatch, useAppSelector } from '@/state/redux';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { randomUUID } from 'crypto';
 import { X } from 'lucide-react';
-import React from 'react';
-import { Form, useForm } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { v4 as uuidv4 } from 'uuid';
 
-const ChapterModel = () => {
+const ChapterModal = () => {
+  const dispatch = useAppDispatch();
   const {
     isChapterModalOpen,
-    sections,
-    selectedChapterIndex,
     selectedSectionIndex,
+    selectedChapterIndex,
+    sections,
   } = useAppSelector((state) => state.global.courseEditor);
 
   const chapter: Chapter | undefined =
-    selectedChapterIndex !== null && selectedSectionIndex !== null
+    selectedSectionIndex !== null && selectedChapterIndex !== null
       ? sections[selectedSectionIndex].chapters[selectedChapterIndex]
       : undefined;
-  const dispatch = useAppDispatch();
 
-  const closeModel = () => {
-    dispatch(closeChapterModal());
-  };
-
-  const methods = useForm({
+  const methods = useForm<ChapterFormData>({
     resolver: zodResolver(chapterSchema),
     defaultValues: {
       title: '',
@@ -47,44 +43,70 @@ const ChapterModel = () => {
     },
   });
 
+  useEffect(() => {
+    if (chapter) {
+      methods.reset({
+        title: chapter.title,
+        content: chapter.content,
+        video: chapter.video || '',
+      });
+    } else {
+      methods.reset({
+        title: '',
+        content: '',
+        video: '',
+      });
+    }
+  }, [chapter, methods]);
+
+  const onClose = () => {
+    dispatch(closeChapterModal());
+  };
+
   const onSubmit = (data: ChapterFormData) => {
-    console.log('Section Model : ', data);
+    if (selectedSectionIndex === null) return;
+
     const newChapter: Chapter = {
-      chapterId: chapter?.chapterId || randomUUID(),
+      chapterId: chapter?.chapterId || uuidv4(),
       title: data.title,
       content: data.content,
       type: data.video ? 'Video' : 'Text',
       video: data.video,
     };
-    if (chapter === null) {
+
+    if (selectedChapterIndex === null) {
       dispatch(
         addChapter({
+          sectionIndex: selectedSectionIndex,
           chapter: newChapter,
-          sectionIndex: selectedSectionIndex as number,
         })
       );
     } else {
-      editChapter({
-        chapter: newChapter,
-        chapterIndex: selectedChapterIndex as number,
-        sectionIndex: selectedSectionIndex as number,
-      });
+      dispatch(
+        editChapter({
+          sectionIndex: selectedSectionIndex,
+          chapterIndex: selectedChapterIndex,
+          chapter: newChapter,
+        })
+      );
     }
+
     toast.success(
       `Chapter added/updated successfully but you need to save the course to apply the changes`
     );
-    closeModel();
+    onClose();
   };
 
   return (
-    <CustomModal isOpen={isChapterModalOpen} onClose={closeModel} key={1}>
+    <CustomModal isOpen={isChapterModalOpen} onClose={onClose}>
       <div className="chapter-modal">
         <div className="chapter-modal__header">
           <h2 className="chapter-modal__title">Add/Edit Chapter</h2>
-          <button onClick={closeModel} className="chapter-modal__close">
+          <button onClick={onClose} className="chapter-modal__close">
             <X className="w-6 h-6" />
           </button>
         </div>
+
         <Form {...methods}>
           <form
             onSubmit={methods.handleSubmit(onSubmit)}
@@ -118,6 +140,7 @@ const ChapterModel = () => {
                         accept="video/*"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
+                          console.log('🚀 ~ ChapterModal ~ file:', file);
                           if (file) {
                             onChange(file);
                           }
@@ -140,8 +163,9 @@ const ChapterModel = () => {
                 </FormItem>
               )}
             />
+
             <div className="chapter-modal__actions">
-              <Button type="button" variant="outline" onClick={closeModel}>
+              <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
               <Button type="submit" className="bg-primary-700">
@@ -155,4 +179,4 @@ const ChapterModel = () => {
   );
 };
 
-export default ChapterModel;
+export default ChapterModal;

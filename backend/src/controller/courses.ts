@@ -114,8 +114,6 @@ const updateCourse = async (req: Request, res: Response): Promise<void> => {
   const courseData = req.body;
   const { courseId } = req.params;
   const { userId } = getAuth(req);
-  console.log('userId', userId);
-  console.log('courseData : ', courseData);
 
   if (!userId) {
     res.status(401).json({
@@ -144,7 +142,7 @@ const updateCourse = async (req: Request, res: Response): Promise<void> => {
       typeof courseData.sections === 'string'
         ? JSON.parse(courseData.sections)
         : courseData.sections;
-    courseData.sections = sectionData?.sections?.map((section: any) => ({
+    courseData.sections = sectionData?.map((section: any) => ({
       ...section,
       sectionId: section?.sectionId || randomUUID(),
       chapters: section?.chapters?.map((chapter: any) => ({
@@ -155,6 +153,7 @@ const updateCourse = async (req: Request, res: Response): Promise<void> => {
     Object.assign(course, courseData);
   }
   await course.save();
+  console.log(course);
 
   res.status(201).json({
     message: 'course updated successfully.',

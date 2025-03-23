@@ -12,7 +12,15 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { BookOpen, Briefcase, DollarSign, LogOut, PanelLeft, Settings, User } from 'lucide-react';
+import {
+  BookOpen,
+  Briefcase,
+  DollarSign,
+  LogOut,
+  PanelLeft,
+  Settings,
+  User,
+} from 'lucide-react';
 import Loading from '@/components/Loading';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
@@ -40,8 +48,11 @@ const AppSideBar = () => {
   };
   if (!isLoaded) return <Loading />;
   if (!user) return <div>User not found</div>;
-  const userRole = (user?.publicMetadata?.userType as 'teacher' | 'student') || 'student';
+  const userRole =
+    (user?.publicMetadata?.userType as 'teacher' | 'student') || 'student';
   const sideBarLinks = navLinks[userRole];
+  console.log('sideBarLinks : ', sideBarLinks);
+
   return (
     <Sidebar
       collapsible="icon"
@@ -80,22 +91,31 @@ const AppSideBar = () => {
             return (
               <SidebarMenuItem
                 key={link.href}
-                className={cn('app-sidebar__nav-item', isActive && 'bg-gray-800')}
+                className={cn(
+                  'app-sidebar__nav-item',
+                  isActive && 'bg-gray-800'
+                )}
               >
                 <SidebarMenuButton
                   asChild
                   size="lg"
                   className={cn(
                     'app-sidebar__nav-button',
-                    !isActive && 'text-customgreys-dirtyGrey',
+                    !isActive && 'text-customgreys-dirtyGrey'
                   )}
                 >
-                  <Link href={link.href} className="app-sidebar__nav-link" scroll={false}>
-                    <link.icon className={isActive ? 'text-white-50' : 'text-gray-500'} />
+                  <Link
+                    href={link.href}
+                    className="app-sidebar__nav-link"
+                    scroll={false}
+                  >
+                    <link.icon
+                      className={isActive ? 'text-white-50' : 'text-gray-500'}
+                    />
                     <span
                       className={cn(
                         'app-sidebar__nav-text',
-                        isActive ? 'text-white-50' : 'text-gray-500',
+                        isActive ? 'text-white-50' : 'text-gray-500'
                       )}
                     >
                       {link.label}
@@ -112,7 +132,10 @@ const AppSideBar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <button onClick={() => signOut()} className="app-sidebar__signout">
+              <button
+                onClick={() => signOut()}
+                className="app-sidebar__signout"
+              >
                 <LogOut className="mr-2 h-6 w-6" />
                 <span>Sign out</span>
               </button>

@@ -44,10 +44,12 @@ const createPaymentIntent = (req, res) => __awaiter(void 0, void 0, void 0, func
                 },
             },
         });
+        console.log(paymentIntent);
         res.json({
             message: '',
             data: paymentIntent.client_secret,
         });
+        return;
     }
     catch (error) {
         res.status(501).json({ message: 'Stripe paymentIntent Error' });
@@ -58,56 +60,54 @@ const createTransaction = (req, res) => __awaiter(void 0, void 0, void 0, functi
     var _a;
     const { userId, courseId, transactionId, paymentProvider, amount } = req.body;
     console.log({ userId, courseId, transactionId, paymentProvider, amount });
-    try {
-        // 1. Check if the course is available
-        const course = yield courseModel_1.default.get(courseId);
-        if (!course) {
-            res.status(404).json({ message: 'Course is not available!' });
-            return;
-        }
-        // 2. Create a transaction record
-        const transaction = new transactionModel_1.default({
-            courseId,
-            userId,
-            transactionId,
-            paymentProvider,
-            amount,
-            dateTime: new Date().toISOString(),
-        });
-        yield transaction.save(); // ✅ Use instance save()
-        // 3. Set up the initial course progress
-        const courseProgress = new userCourseProgressModel_1.default({
-            userId,
-            courseId,
-            enrollmentDate: new Date().toISOString(),
-            lastAccessedTimestamp: new Date().toISOString(),
-            overallProgress: 0,
-            sections: (_a = course === null || course === void 0 ? void 0 : course.sections) === null || _a === void 0 ? void 0 : _a.map((section) => {
-                var _a;
-                return ({
-                    sectionId: section === null || section === void 0 ? void 0 : section.sectionId,
-                    chapters: ((_a = section === null || section === void 0 ? void 0 : section.chapters) === null || _a === void 0 ? void 0 : _a.map((chapter) => ({
-                        chapterId: chapter === null || chapter === void 0 ? void 0 : chapter.chapterId,
-                        completed: false,
-                    }))) || [],
-                });
-            }),
-        });
-        yield courseProgress.save();
-        // 4. Update course enrollments
-        yield courseModel_1.default.update({ courseId }, { $ADD: { enrollments: [{ userId }] } });
-        res.json({
-            message: 'Course purchased successfully!',
-            data: {
-                transaction,
-                courseProgress,
-            },
-        });
+    // 1. Check if the course is available
+    const course = yield courseModel_1.default.get(courseId);
+    if (!course) {
+        res.status(404).json({ message: 'Course is not available!' });
+        return;
     }
-    catch (error) {
-        console.error('Transaction Error:', error);
-        res.status(500).json({ message: 'Transaction Error!' });
-    }
+    // 2. Create a transaction record
+    const transaction = new transactionModel_1.default({
+        courseId,
+        userId,
+        transactionId,
+        paymentProvider,
+        amount,
+        dateTime: new Date().toISOString(),
+    });
+    yield transaction.save(); // ✅ Use instance save()
+    // 3. Set up the initial course progress
+    const courseProgress = new userCourseProgressModel_1.default({
+        userId,
+        courseId,
+        enrollmentDate: new Date().toISOString(),
+        lastAccessedTimestamp: new Date().toISOString(),
+        overallProgress: 0,
+        sections: (_a = course === null || course === void 0 ? void 0 : course.sections) === null || _a === void 0 ? void 0 : _a.map((section) => {
+            var _a;
+            return ({
+                sectionId: section === null || section === void 0 ? void 0 : section.sectionId,
+                chapters: ((_a = section === null || section === void 0 ? void 0 : section.chapters) === null || _a === void 0 ? void 0 : _a.map((chapter) => ({
+                    chapterId: chapter === null || chapter === void 0 ? void 0 : chapter.chapterId,
+                    completed: false,
+                }))) || [],
+            });
+        }),
+    });
+    yield courseProgress.save();
+    const enrollments = (course === null || course === void 0 ? void 0 : course.enrollments) || [];
+    console.log('🚀 ~ enrollments:', enrollments);
+    const response = yield courseModel_1.default.update({ courseId }, { enrollments: [...enrollments, { userId }] });
+    yield course.save();
+    console.log('🚀 ~ response:', response);
+    console.log(course);
+    res.json({
+        message: 'Course purchased successfully!',
+        data: {
+            transaction,
+            courseProgress,
+        },
+    });
 });
 exports.createTransaction = createTransaction;
 const getUserTransaction = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

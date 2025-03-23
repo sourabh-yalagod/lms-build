@@ -58,6 +58,8 @@ const page = () => {
         id,
         getUploadVideoUrl
       );
+      console.log('updatedSections : ', updatedSections);
+
       const formData = createCourseFormData(data, updatedSections);
       console.log('formData : ', formData);
 
