@@ -27,7 +27,7 @@ let client;
 /* DynamoDB Configuration */
 const isProduction = process.env.NODE_ENV === 'production';
 console.log('isProduction : ', isProduction);
-if (isProduction) {
+if (!isProduction) {
     dynamoose_1.default.aws.ddb.local();
     client = new client_dynamodb_1.DynamoDBClient({
         endpoint: 'http://localhost:8000',
