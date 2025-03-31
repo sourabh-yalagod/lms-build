@@ -6,7 +6,6 @@ import {
 } from '@reduxjs/toolkit/query/react';
 
 import { Clerk } from '@clerk/clerk-js';
-import { toast } from 'sonner';
 import { User } from '@clerk/nextjs/server';
 
 const customBaseQuery = async (
@@ -28,32 +27,16 @@ const customBaseQuery = async (
     const result: any = await baseQuery(args, api, extraOptions);
     console.log('🚀 ~ customBaseQuery ~ result:', result);
     if (result?.error) {
-      if (result.error instanceof Error) {
-        toast.error(result.error.message);
-      } else {
-        toast.error('Something went Wrong.....!');
-      }
-      return { result: null };
+      console.log(result?.error);
+      return { error: result.error };
     }
     if (result.data) {
-      if (result.data?.message) {
-        toast.success(result.data?.message, { duration: 1500 });
-      }
-      result.data = result.data.data;
-    } else if (result.error) {
-      console.log('result.error : ', result.error);
-
-      toast.success(result?.message);
-      return { data: null };
+      result.data = result?.data?.data;
     }
     return result;
-  } catch (error) {
-    if (error instanceof Error) {
-      toast.error(error.message);
-    } else {
-      toast.error('Something went Wrong.....!');
-    }
-    return { result: null };
+  } catch (error: any) {
+    console.error('Something went Wrong.....!');
+    return { error: error };
   }
 };
 export const api = createApi({
@@ -96,7 +79,7 @@ export const api = createApi({
         body: transaction,
         method: 'POST',
       }),
-      invalidatesTags: ['transactions'],
+      invalidatesTags: ['transactions', 'courses'],
     }),
     getUserTransactions: build.query<Transaction[], string>({
       query: (userId) => ({
@@ -178,12 +161,13 @@ export const api = createApi({
         courseId: string;
         sectionId: string;
         chapterId: string;
-        videoName: string;
-        videoType: string;
+        videoName: any;
+        videoType: any;
       }
     >({
       query: ({ courseId, sectionId, chapterId, videoName, videoType }) => ({
-        url: `/${courseId}/sections/${sectionId}/chapters/${chapterId}/get-upload-url`,
+        url: `/courses/${courseId}/sections/${sectionId}/chapters/${chapterId}/get-upload-url`,
+        // /:courseId/sections/:sectionId/chapters/:chapterId/get-upload-url
         body: { videoName, videoType },
         method: 'POST',
       }),

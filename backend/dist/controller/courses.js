@@ -128,6 +128,7 @@ const updateCourse = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     const courseData = req.body;
     const { courseId } = req.params;
     const { userId } = (0, express_1.getAuth)(req);
+    console.log('courseData : ', courseData);
     if (!userId) {
         res.status(401).json({
             message: 'Please authnticated to updated course...!',
@@ -205,6 +206,7 @@ const deleteCourse = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.deleteCourse = deleteCourse;
 const getUploadVideoUrl = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { videoName, videoType } = req.body;
+    console.log(`🚀 ~ { videoName, videoType }:`, { videoName, videoType });
     if (!videoName || !videoType) {
         res.status(401).json({
             message: 'Video name and Video Type is required...!',
@@ -212,29 +214,20 @@ const getUploadVideoUrl = (req, res) => __awaiter(void 0, void 0, void 0, functi
         });
         return;
     }
-    try {
-        const uniqeId = (0, crypto_1.randomUUID)();
-        const s3Key = `videos/${uniqeId}/${videoName}`;
-        const s3Params = {
-            Key: s3Key,
-            Bucket: process.env.S3_BUCKET_NAME || '',
-            Expire: 60,
-            ContentType: videoType,
-        };
-        const uploadUrl = s3.getSignedUrl('putObject', s3Params);
-        const videoUrl = `${process.env.CLOUDFRONT_DOMAIN}/videos/${uniqeId}/${videoName}`;
-        res.status(201).json({
-            message: 'Upload URL set successfully',
-            data: { uploadUrl, videoUrl },
-        });
-    }
-    catch (error) {
-        res.status(401).json({
-            message: 'video uplaod url failed..',
-            error,
-            success: false,
-        });
-        return;
-    }
+    const uniqeId = (0, crypto_1.randomUUID)();
+    const s3Key = `videos/${uniqeId}/${videoName}`;
+    const s3Params = {
+        Key: s3Key,
+        Bucket: process.env.S3_BUCKET_NAME || '',
+        ContentType: videoType,
+    };
+    const uploadUrl = s3.getSignedUrl('putObject', s3Params);
+    const videoUrl = `${process.env.CLOUDFRONT_DOMAIN}/videos/${uniqeId}/${videoName}`;
+    console.log('🚀 ~ uploadUrl:', uploadUrl);
+    console.log('🚀 ~ videoUrl:', videoUrl);
+    res.status(201).json({
+        message: 'Upload URL set successfully',
+        data: { uploadUrl, videoUrl },
+    });
 });
 exports.getUploadVideoUrl = getUploadVideoUrl;

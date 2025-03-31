@@ -21,7 +21,7 @@ router.post('/', requireAuth(), createCourse);
 router.put('/:courseId', requireAuth(), upload.none(), updateCourse);
 router.delete('/:courseId', requireAuth(), deleteCourse);
 router.post(
-  '/:courseId/sections/:sectionId/chapters/:chapterId/get-uplaod-url',
+  '/:courseId/sections/:sectionId/chapters/:chapterId/get-upload-url',
   getUploadVideoUrl
 );
 

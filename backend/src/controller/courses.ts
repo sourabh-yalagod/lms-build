@@ -114,6 +114,7 @@ const updateCourse = async (req: Request, res: Response): Promise<void> => {
   const courseData = req.body;
   const { courseId } = req.params;
   const { userId } = getAuth(req);
+  console.log('courseData : ', courseData);
 
   if (!userId) {
     res.status(401).json({
@@ -202,6 +203,7 @@ const getUploadVideoUrl = async (
   res: Response
 ): Promise<void> => {
   const { videoName, videoType } = req.body;
+  console.log(`🚀 ~ { videoName, videoType }:`, { videoName, videoType });
   if (!videoName || !videoType) {
     res.status(401).json({
       message: 'Video name and Video Type is required...!',
@@ -209,30 +211,22 @@ const getUploadVideoUrl = async (
     });
     return;
   }
-  try {
-    const uniqeId = randomUUID();
-    const s3Key = `videos/${uniqeId}/${videoName}`;
-    const s3Params = {
-      Key: s3Key,
-      Bucket: process.env.S3_BUCKET_NAME || '',
-      Expire: 60,
-      ContentType: videoType,
-    };
-    const uploadUrl = s3.getSignedUrl('putObject', s3Params);
-    const videoUrl = `${process.env.CLOUDFRONT_DOMAIN}/videos/${uniqeId}/${videoName}`;
+  const uniqeId = randomUUID();
+  const s3Key = `videos/${uniqeId}/${videoName}`;
+  const s3Params = {
+    Key: s3Key,
+    Bucket: process.env.S3_BUCKET_NAME || '',
+    ContentType: videoType,
+  };
+  const uploadUrl = s3.getSignedUrl('putObject', s3Params);
+  const videoUrl = `${process.env.CLOUDFRONT_DOMAIN}/videos/${uniqeId}/${videoName}`;
 
-    res.status(201).json({
-      message: 'Upload URL set successfully',
-      data: { uploadUrl, videoUrl },
-    });
-  } catch (error) {
-    res.status(401).json({
-      message: 'video uplaod url failed..',
-      error,
-      success: false,
-    });
-    return;
-  }
+  console.log('🚀 ~ uploadUrl:', uploadUrl);
+  console.log('🚀 ~ videoUrl:', videoUrl);
+  res.status(201).json({
+    message: 'Upload URL set successfully',
+    data: { uploadUrl, videoUrl },
+  });
 };
 export {
   courseById,

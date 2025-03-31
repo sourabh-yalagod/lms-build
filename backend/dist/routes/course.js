@@ -16,5 +16,5 @@ router.get('/:courseId', courses_1.courseById);
 router.post('/', (0, express_2.requireAuth)(), courses_1.createCourse);
 router.put('/:courseId', (0, express_2.requireAuth)(), upload.none(), courses_1.updateCourse);
 router.delete('/:courseId', (0, express_2.requireAuth)(), courses_1.deleteCourse);
-router.post('/:courseId/sections/:sectionId/chapters/:chapterId/get-uplaod-url', courses_1.getUploadVideoUrl);
+router.post('/:courseId/sections/:sectionId/chapters/:chapterId/get-upload-url', courses_1.getUploadVideoUrl);
 exports.default = router;

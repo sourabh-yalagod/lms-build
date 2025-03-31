@@ -35,7 +35,7 @@ const ChaptersSidebar = () => {
 
   if (isLoading) return <Loading />;
   if (!user) return <div>Please sign in to view course progress.</div>;
-  if (!course || !userProgress) return <div>Error loading course content</div>;
+  if (!course || !userProgress) return '';
 
   const toggleSection = (sectionTitle: string) => {
     setExpandedSections((prevSections) =>

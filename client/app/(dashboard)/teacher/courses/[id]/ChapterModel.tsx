@@ -140,7 +140,6 @@ const ChapterModal = () => {
                         accept="video/*"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
-                          console.log('🚀 ~ ChapterModal ~ file:', file);
                           if (file) {
                             onChange(file);
                           }

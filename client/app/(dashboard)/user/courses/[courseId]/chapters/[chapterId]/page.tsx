@@ -7,6 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import ReactPlayer from 'react-player';
 import Loading from '@/components/Loading';
 import { useCourseProgressData } from '@/app/hooks/useCourseProgressData';
+import ChaptersSidebar from '@/components/courses/[courseId]/ChaptersSidebar';
 
 const Course = () => {
   const {

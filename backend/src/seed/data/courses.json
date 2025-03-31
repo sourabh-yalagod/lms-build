@@ -25,7 +25,7 @@
             "type": "Video",
             "title": "Welcome to Programming",
             "content": "https://example.com/videos/welcome.mp4",
-            "video": "https://example.com/videos/welcome.mp4",
+            "video": "https://res.cloudinary.com/daaqothd4/video/upload/v1737818063/u0oowrwae8qwlaimeien.mp4",
             "comments": [
               {
                 "commentId": "1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
@@ -61,7 +61,7 @@
             "type": "Video",
             "title": "Variables and Data Types",
             "content": "https://example.com/videos/variables-data-types.mp4",
-            "video": "https://example.com/videos/variables-data-types.mp4",
+            "video": "https://res.cloudinary.com/daaqothd4/video/upload/v1737818023/sxbjtrnkjjjgvrnvl2yc.mp4",
             "comments": []
           },
           {
@@ -90,7 +90,7 @@
             "type": "Video",
             "title": "Introduction to Functions",
             "content": "https://example.com/videos/intro-to-functions.mp4",
-            "video": "https://example.com/videos/intro-to-functions.mp4",
+            "video": "https://res.cloudinary.com/daaqothd4/video/upload/v1737818063/u0oowrwae8qwlaimeien.mp4",
             "comments": []
           },
           {
@@ -251,7 +251,7 @@
             "type": "Video",
             "title": "Introduction to HTML",
             "content": "https://example.com/videos/intro-to-html.mp4",
-            "video": "https://example.com/videos/intro-to-html.mp4",
+            "video": "https://res.cloudinary.com/daaqothd4/video/upload/v1737818520/kb0zwvwhovtsvd5gw2vr.mp4",
             "comments": []
           },
           {
@@ -280,7 +280,7 @@
             "type": "Video",
             "title": "CSS Basics",
             "content": "https://example.com/videos/css-basics.mp4",
-            "video": "https://example.com/videos/css-basics.mp4",
+            "video": "https://res.cloudinary.com/daaqothd4/video/upload/v1737818063/u0oowrwae8qwlaimeien.mp4",
             "comments": []
           },
           {
@@ -327,7 +327,7 @@
             "type": "Video",
             "title": "What is Data Science?",
             "content": "https://example.com/videos/what-is-data-science.mp4",
-            "video": "https://example.com/videos/what-is-data-science.mp4",
+            "video": "https://res.cloudinary.com/daaqothd4/video/upload/v1737817787/fvbu1lemi9n7wczdupck.mp4",
             "comments": []
           },
           {
@@ -364,7 +364,7 @@
             "type": "Video",
             "title": "Setting Up Your Development Environment",
             "content": "https://example.com/videos/react-native-setup.mp4",
-            "video": "https://example.com/videos/react-native-setup.mp4",
+            "video": "https://res.cloudinary.com/daaqothd4/video/upload/v1737817699/r9ljzgchingl2rrzxin6.mp4",
             "comments": []
           },
           {
